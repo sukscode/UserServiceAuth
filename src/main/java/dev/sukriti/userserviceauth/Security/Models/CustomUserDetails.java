@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.sukriti.userserviceauth.Models.Role;
 import dev.sukriti.userserviceauth.Models.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
@@ -11,32 +13,37 @@ import java.util.Collection;
 import java.util.List;
 
 @JsonDeserialize
+@NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
-    private final List<GrantedAuthority> grantedAuthorities;
-    private final String username;
-    private final String password;
+    private  List<GrantedAuthority> authorities;
+    private  String username;
+    private  String password;
     @Getter
-    private final Long userId;
-    private final boolean AccountNonExpired;
-    private final boolean AccountNonLocked;
-    private final boolean CredentialsNonExpired;
-    private final boolean Enabled;
+    @Setter
+    private  Long userId;
+    private  boolean accountNonExpired;
+    private  boolean accountNonLocked;
+    private  boolean credentialsNonExpired;
+    private  boolean enabled;
 
 
     //private final User user;
-    public CustomUserDetails(User user, Long userId) {
-        this.userId = userId;
-        grantedAuthorities= new ArrayList<>();
+    public CustomUserDetails(User user) {
 
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new CustomGrantedAuthority(role));
+//        this.user = user;
+        authorities = new ArrayList<>();
+
+        for (Role role: user.getRoles()) {
+            authorities.add(new CustomGrantedAuthority(role));
         }
+
         this.password = user.getPassword();
         this.username = user.getEmail();
-        this.AccountNonExpired = true;
-        this.AccountNonLocked = true;
-        this.CredentialsNonExpired = true;
-        this.Enabled = true;
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialsNonExpired = true;
+        this.enabled = true;
+        this.userId = user.getId();
     }
 
     @Override
@@ -46,7 +53,7 @@ public class CustomUserDetails implements UserDetails {
 //        for (Role role : user.getRoles()) {
 //            grantedAuthorities.add(new CustomGrantedAuthority(role));
 //        }
-        return this.grantedAuthorities;
+        return this.authorities;
     }
 
     @Override
@@ -61,22 +68,22 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.AccountNonExpired;
+        return this.accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.AccountNonLocked;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.CredentialsNonExpired;
+        return this.credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.Enabled;
+        return this.enabled;
     }
 
 }
